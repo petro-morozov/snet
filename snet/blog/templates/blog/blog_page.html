@@ -1,0 +1,85 @@
+{% extends 'reg/base.html' %}
+{% load staticfiles %}
+{% block content %}
+
+<div id="main_blog">
+        <div id="blog_title"><p>Лента:</p>
+            <form method="get" action="" id="srch_form">
+                <input id="ribbon_srch_input" type="text" name="q" placeholder="" value="{{ request.GET.q }}">
+                <button id="ribbon_srch_button"><i class="fa fa-search" aria-hidden="true"></i></button>
+            </form>
+        </div>
+
+    <div id="blog_form">
+        {% if request.user.is_authenticated %}
+            <form method="post" action="" enctype="multipart/form-data" class="add-entry">
+                {% csrf_token %}
+                {{ form.text }}
+                <label id="fukken_image_label" onclick="$(this).css('color','#fff');"> {{ form.image }} <i class="fa fa-camera" aria-hidden="true"></i></label>
+                <input id="blog_form_submit" type="submit" name="user_post" value="Написать"/>
+            </form>
+        {% else %}
+            Чтобы оставить запись, вы должны зарегистрироваться.
+        {% endif %}
+    </div>
+
+    {% if posts %}
+            <ul class="entries">
+                {% for post in posts %}
+                            <li>
+                                <h4><label class="label_name"><a href="{% url 'user_page:user_page' post.fk.id %}">{{ post.fk }}</a></label><label class="label_time">{{ post.timestamp }}</label></h4>
+                                    <ul class="fucking_ul_that_pissed_me_off">
+                                        <li>
+                                            {% if post.fk.user_pic %}
+                                                <a href="{% url 'user_page:user_page' post.fk.id %}"><img class="blog_avatar" src="{{ post.fk.user_pic.image.url }}" alt="image" width="50" height="50"></a>
+                                            {% else %}
+                                                <a href="{% url 'user_page:user_page' post.fk.id %}"><img class="blog_avatar" src="{% static 'reg/a.png' %}" alt="image" width="50" height="50"></a>
+                                            {% endif %}
+                                        </li>
+
+                                            {% if request.user == post.fk %}
+                                                <li class="delete_blog_link"><a href="{% url 'blog:delete' post.id %}"> <i class="fa fa-times" aria-hidden="true"></i></a></li>
+                                            {% endif %}
+
+                                            {% for c in post.comments.all %}
+                                                {% if forloop.last %}
+                                                    <li class="detail_blog_link"><a href="{% url 'blog:detail' post.id %}">{{ forloop.counter }} <i class="fa fa-comments" aria-hidden="true"></i></a></li>
+                                                {% endif %}
+                                            {% empty %}
+                                                <li class="detail_blog_link"><a href="{% url 'blog:detail' post.id %}"> <i class="fa fa-comments" aria-hidden="true"></i></a></li>
+                                            {% endfor %}
+
+                                    </ul>
+
+                                    {% if post.image %}
+                                        <div class="blog_image"><a href="{{ post.image.url }}"><img src="{{ post.image.url }}" alt="image" width="200" height="200"></a></div>
+                                    {% endif %}
+                                        <p class="blog_text">{{ post.text}}</p>
+                            </li>
+                {% endfor %}
+            </ul>
+
+
+
+            <div class="pagination">
+                <span class="step-links">
+                    {% if posts.has_previous %}
+                        <a href="?page={{ posts.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                    Страница {{ posts.number }} из <a href="?page={{ posts.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ posts.paginator.num_pages }}</a>.
+                    </span>
+
+                    {% if posts.has_next %}
+                        <a href="?page={{ posts.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">next</a>
+                    {% endif %}
+                </span>
+            </div>
+    {% else %}
+        <div class="if_no_posts_yet">Нет постов. </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

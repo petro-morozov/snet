@@ -1,0 +1,25 @@
+{% extends 'reg/base.html' %}
+{% load staticfiles %}
+{% block content %}
+    <ul class="list_of_users">
+        {% for f in user_fellows %}
+            {% if f.second_user.user_pic %}
+                <li>
+                    <p class="list_of_users_title"><a href="{% url 'user_page:user_page' f.second_user.id %}">{{ f.second_user }}</a></p>
+                    <a href="{% url 'user_page:user_page' f.second_user.id %}">
+                        <img title="{{ f.second_user }}" src="{{ f.second_user.user_pic.image.url }}" alt="{{ f.second_user }}" width="200" height="200">
+                    </a>
+                    <a class="user_list_chat_button_a" href="{% url 'chat:create_room' f.second_user.id %}"><div class="user_list_chat_button">Написать</div></a>
+                </li>
+            {% else %}
+                <li>
+                    <p class="list_of_users_title"><a href="{% url 'user_page:user_page' f.second_user.id %}">{{ f.second_user }}</a></p>
+                    <a href="{% url 'user_page:user_page' f.second_user.id %}">
+                        <img title="{{ f.second_user }}" src="{% static 'reg/a.png' %}" alt="{{ f.second_user }}" width="200" height="200">
+                    </a>
+                    <a class="user_list_chat_button_a" href="{% url 'chat:create_room' f.second_user.id %}"><div class="user_list_chat_button">Написать</div></a>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+{% endblock %}

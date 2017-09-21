@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Title</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'reg/main_style.css' %}">
+    <script src="//code.jquery.com/jquery-3.1.1.min.js"></script>
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="header">
+        <nav>
+            <ul class="menu">
+                <li id="settings_menu_trigger"><i class="fa fa-cog" aria-hidden="true"></i>
+                        <ul id="settings_menu">
+                            {% if request.user.is_authenticated %}
+                                <li><a href="{% url 'reg:logout' %}">Выход</a></li>
+                                <li><a href="{% url 'reg:user_settings' %}">Настройки</a></li>
+                            {% else %}
+                                <li><a href="{% url 'reg:login' %}">Логин</a></li>
+                                <li><a href="{% url 'reg:register' %}">Регистрация</a></li>
+                            {% endif %}
+                            {% if request.user.is_staff %}
+                                <li><a href="{% url 'admin:index' %}">Admin</a></li>
+                            {% endif %}
+                        </ul>
+                </li>
+                {% if request.user.is_authenticated %}
+                    <li id="nav_chat"><a href="{% url 'chat:user_rooms' %}">
+                        <script type="text/javascript">
+                            var messageCounter = {{new_messages_counter}};
+                            if (messageCounter == 0) {
+                                document.write("<span id='mcount'></span>" + "<span><i class='fa fa-envelope' aria-hidden='true'></i></span>");
+                            } else {
+                                document.write("<span id='mcount'>" + messageCounter + "</span id='mcountIco'>" +"<span><i class='fa fa-envelope' aria-hidden='true'></i></span>");
+                            }
+                        </script>
+                    </a></li>
+                    <li id="nav_userPage"><a title="{{request.user}}" href="{% url 'user_page:user_page' request.user.id %}">
+                        {% if request.user.user_pic %}
+                            <img class="avatar_ico" src="{{ request.user.user_pic.image.url }}" alt="image">
+                        {% else %}
+                            <img class="avatar_ico" src="{% static 'reg/a.png' %}" alt="image">
+                        {% endif %}
+                    </a></li>
+                {% endif %}
+                <li id="nav_home"><a href="{% url 'blog:post_view' %}"><i class="fa fa-home fa-fw" aria-hidden="true"></i></a></li>
+                <li id="nav_users"><a href="{% url 'user_page:show_all_users' %}">Пользователи</a></li>
+            </ul>
+        </nav>
+    </div>
+
+
+    {% block script %}{% endblock %}
+    <div class="container">
+
+        {% if messages %}
+            <ul class="django-messages">
+                {% for message in messages %}
+                    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+            {% block content %}
+            {% endblock %}
+
+        <audio id="msg_snd" hidden controls>
+            <source src="{% static 'reg/msgsnd.wav' %}" type="audio/mp3">
+            <p>Your browser doesn't support HTML5 audio. Here is a <a href="viper.mp3">link to the audio</a> instead.</p>
+        </audio>
+    </div>
+
+
+<div id="messMess" ></div>
+
+{% block websocket %}
+{% if request.user.is_authenticated %}
+    <script>
+        var sTime;
+            function HoldTimer(x) {
+                clearTimeout(sTime);
+            };
+        var slow = 'slow'
+
+        var socket = new WebSocket('ws://' + window.location.host + '/user_page/{{request.user.id}}/');
+
+        socket.onopen = function open() {
+            console.log('WebSockets connection created.');
+        };
+
+        socket.onmessage = function message(event) {
+            console.log('message.');
+            var data = JSON.parse(event.data);
+
+            if (data['cc']) {
+                var mCon = String(data['m']);
+                var mU = String(data['u']);
+
+                $('#messMess').prepend('<div class="vvv" onmouseover="HoldTimer()" onmouseout="$(this).hide(slow);" id="' + data['cc'] + '">'+ mU + ': ' + mCon + '</div><br>')
+                sTime = setTimeout(function(){
+                    $('#' + data['cc']).hide();
+                }, 10000);
+                sTime;
+
+
+                var msgsnd = document.getElementById("msg_snd");
+                $(function () {
+                    msgsnd.play();
+                });
+            }
+
+            if (data['c']) {
+                var m = document.getElementById('mcount');
+
+                var mCn = data['c'];//Number(messageCounter) + 1;
+                m.innerHTML = mCn
+            }
+        };
+
+        if (socket.readyState == WebSocket.OPEN) socket.onopen();
+
+    </script>
+{% endif %}
+{% endblock websocket %}
+
+</body>
+
+</html>

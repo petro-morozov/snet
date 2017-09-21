@@ -1,0 +1,25 @@
+{% extends 'reg/base.html' %}
+{% load staticfiles %}
+{% block content %}
+    <ul class="list_of_users">
+        {% for user in users %}
+            {% if user.user_pic %}
+                <li>
+                    <p class="list_of_users_title"><a href="{% url 'user_page:user_page' user.id %}">{{ user }}</a></p>
+                    <a href="{% url 'user_page:user_page' user.id %}">
+                        <img title="{{ user }}" src="{{ user.user_pic.image.url }}" alt="{{ user }}" width="200" height="200">
+                    </a>
+                    <a class="user_list_chat_button_a" href="{% url 'chat:create_room' user.id %}"><div class="user_list_chat_button">Написать</div></a>
+                </li>
+            {% else %}
+                <li>
+                    <p class="list_of_users_title"><a href="{% url 'user_page:user_page' user.id %}">{{ user }}</a></p>
+                    <a href="{% url 'user_page:user_page' user.id %}">
+                        <img title="{{ user }}" src="{% static 'reg/a.png' %}" alt="{{ user }}" width="200" height="200">
+                    </a>
+                    <a class="user_list_chat_button_a" href="{% url 'chat:create_room' user.id %}"><div class="user_list_chat_button">Написать</div></a>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+{% endblock %}

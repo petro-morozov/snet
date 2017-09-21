@@ -1,0 +1,71 @@
+{% extends 'reg/base.html' %}
+{% load staticfiles %}
+{% block content %}
+
+    <div class="post_detail_div">
+        <h4><a class="post_detail_div_a" href="{% url 'user_page:user_page' post_detail.fk.id %}">{{ post_detail.fk }}</a></h4>
+        {% if request.user == post_detail.fk %}
+            <a class="post_detail_div_a_update" title="Изменить" href="{% url 'blog:update' post_detail.id %}"> <i class="fa fa-pencil-square-o" aria-hidden="true"></i> </a>
+        {% endif %}
+
+            {% if post_detail.fk.user_pic %}
+                <a href="{% url 'user_page:user_page' post_detail.fk.id %}"><img class="post_detail_avatar_image" src="{{ post_detail.fk.user_pic.image.url }}" alt="image" width="60" height="60"></a>
+            {% else %}
+                <a href="{% url 'user_page:user_page' post_detail.fk.id %}"><img class="post_detail_avatar_image" src="{% static 'reg/a.png' %}" alt="image" width="60" height="60"></a>
+            {% endif %}
+        {% if post_detail.image %}
+            <a href="{{ post_detail.image.url }}"><img class="blog_image" src="{{ post_detail.image.url }}" alt="image" ></a>
+        {% endif %}
+        <p class="detail_text_class">{{ post_detail.text }}</p>
+    </div>
+
+        <div id="blog_title"><p>Коментарии:</p></div>
+
+   <div id="blog_form">
+        {% if request.user.is_authenticated %}
+            <form method="post" action="" enctype="multipart/form-data" class="add-entry">
+                {% csrf_token %}
+                {{ form.text }}
+                <input id="blog_form_submit" type="submit" name="user_post" value="Написать"/>
+            </form>
+        {% endif %}
+    </div>
+
+
+{% if comments %}
+        <ul class="entries">
+        {% for comment in comments %}
+            <div class="comments_div">
+                <li> <h4 class="comments_h4"><label><a href="{% url 'user_page:user_page' comment.fk.id %}">{{ comment.fk }}</a></label><label>{{ comment.timestamp }}</label></h4>
+
+                    {% if comment.fk.user_pic %}
+                        <a href="{% url 'user_page:user_page' comment.fk.id %}"><img class="comments_avatar_image" src="{{ comment.fk.user_pic.image.url }}" alt="image" width="50" height="50"></a>
+                    {% else %}
+                        <a href="{% url 'user_page:user_page' comment.fk.id %}"><img class="comments_avatar_image" src="{% static 'reg/a.png' %}" alt="image" width="50" height="50"></a>
+                    {% endif %}
+
+                    <p class="comment_text">{{ comment.text}}</p>
+                </li>
+            </div>
+        {% endfor %}
+        </ul>
+
+            <div class="pagination">
+                <span class="step-links">
+                    {% if comments.has_previous %}
+                        <a href="?page={{ comments.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                    Page {{ comments.number }} of <a href="?page={{ comments.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ comments.paginator.num_pages }}</a>.
+                    </span>
+
+                    {% if comments.has_next %}
+                        <a href="?page={{ comments.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">next</a>
+                    {% endif %}
+                </span>
+            </div>
+    {% else %}
+        <div class="if_no_posts_yet">Нет комментариев. </div>
+    {% endif %}
+{% endblock %}

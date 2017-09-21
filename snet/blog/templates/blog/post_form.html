@@ -1,0 +1,12 @@
+{% extends 'reg/base.html' %}
+{% block content %}
+
+        <form method="post" action="" enctype="multipart/form-data" class="change_entry">
+            {% csrf_token %}
+            {{ form.text }}
+
+            <label id="fukken_image_label" onclick="$(this).css('color','#fff');"> {{ form.image }} <i class="fa fa-camera" aria-hidden="true"></i></label>
+            <input id="blog_form_submit" type="submit" value="Изменить"/>
+        </form>
+
+{% endblock %}

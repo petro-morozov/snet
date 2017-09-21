@@ -1,0 +1,33 @@
+{% extends 'reg/base.html' %}
+{% load staticfiles %}
+{% block content %}
+
+
+
+
+<ul id="user_setting_list" >
+        {% if request.user.show_fellows.show == False %}
+            <li id="saved_users"> Показывать список сохраненных пользователей (сейчас скрыт) ?
+            <input id="show_f" class="user_setting_list_button" type="button" value="Да"> </li>
+        {% else %}
+            <li id="saved_users">Скрыть список сохраненных пользователей (сейчас открыт) ?
+            <input id="show_f" class="user_setting_list_button" type="button" value="Да"></li>
+        {% endif %}
+</ul>
+<script>
+    $(document).on('click', '#show_f', function(e) {
+        e.preventDefault();
+        $.ajax({
+            type: 'GET',
+            url: '/show_fellows_list/',
+            dataType: 'json',
+            success: function(){console.log('changed')},
+            complete:  function(){
+                var savedUsers = document.getElementById('saved_users');
+                savedUsers.innerHTML = 'Изменения сохранены';
+            }
+        });
+    });
+
+</script>
+{% endblock %}

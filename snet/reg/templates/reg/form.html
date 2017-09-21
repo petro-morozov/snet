@@ -1,0 +1,19 @@
+{% extends 'reg/base.html' %}
+{% block content %}
+
+    {% if request.user.is_authenticated %}
+        <h2>Вы уже аутентифицированы.</h2><br>
+        <a href="{% url 'reg:logout' %}"> Logout </a>
+    {% else %}
+        <div id="authentication_form">
+        <form method="post" action="" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input id="authentication_form_button" type="submit" value="{{title}}"/>
+        </form>
+        </div>
+    {% endif %}
+
+
+{% endblock %}
+

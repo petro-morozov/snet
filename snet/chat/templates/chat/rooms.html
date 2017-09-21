@@ -1,0 +1,222 @@
+{% extends 'reg/base.html' %}
+{% load staticfiles %}
+{% block content %}
+
+<div class="roomsList">
+    {% for room in q %}
+        {% if room.f_usr == request.user %}
+            {% if room.f_usr.user_pic %}
+                {% for msg in room.message.all %}
+                    {% if forloop.last %}
+                        {% if msg.fk != request.user and msg.saw == False %}
+                                <div class="chatRoomBlock">
+                                    {% if room.s_usr.user_pic %}
+                                        <a href="{% url 'user_page:user_page' room.s_usr.id %}"><img src="{{ room.s_usr.user_pic.image.url }}" alt="image" width="50" height="50"></a>
+                                    {% else %}
+                                        <a href="{% url 'user_page:user_page' room.s_usr.id %}"><img src="{% static 'reg/a.jpg' %}" alt="image" width="50" height="50"></a>
+                                    {% endif %}
+                                    <a href="{% url 'user_page:user_page' room.s_usr.id %}"><span>{{ room.s_usr }}</span></a>
+                                    <a href="{% url 'chat:chat_room' room.id %}">
+                                        <div id="{{room.s_usr.id}}" class="chatRoomUnseen">{{msg.fk}} :  {{msg.text}</div>
+                                    </a>
+                                </div>
+                        {% elif msg.fk == request.user and msg.saw == False %}
+                                <div class="chatRoomBlock">
+                                    {% if room.s_usr.user_pic %}
+                                        <a href="{% url 'user_page:user_page' room.s_usr.id %}"><img src="{{ room.s_usr.user_pic.image.url }}" alt="image" width="50" height="50"></a>
+                                    {% else %}
+                                        <a href="{% url 'user_page:user_page' room.s_usr.id %}"><img src="{% static 'reg/a.jpg' %}" alt="image" width="50" height="50"></a>
+                                    {% endif %}
+                                    <a href="{% url 'user_page:user_page' room.s_usr.id %}"><span>{{ room.s_usr }}</span></a>
+                                    <a href="{% url 'chat:chat_room' room.id %}">
+                                        <div id="{{room.s_usr.id}}" class="RUchatRoomUnseen">{{msg.fk}} :  {{msg.text}}</div>
+                                    </a>
+                                </div>
+                        {% else %}
+                                <div class="chatRoomBlock">
+                                    {% if room.s_usr.user_pic %}
+                                        <a href="{% url 'user_page:user_page' room.s_usr.id %}"><img src="{{ room.s_usr.user_pic.image.url }}" alt="image" width="50" height="50"></a>
+                                    {% else %}
+                                        <a href="{% url 'user_page:user_page' room.s_usr.id %}"><img src="{% static 'reg/a.jpg' %}" alt="image" width="50" height="50"></a>
+                                    {% endif %}
+                                    <a href="{% url 'user_page:user_page' room.s_usr.id %}"><span>{{ room.s_usr }}</span></a>
+                                    <a href="{% url 'chat:chat_room' room.id %}">
+                                        <div id="{{room.s_usr.id}}" class="chatRoomSeen">{{msg.fk}} :  {{msg.text}}</div>
+                                    </a>
+                                </div>
+                        {% endif %}
+                    {% endif %}
+                {% empty %}
+                {% endfor %}
+            {% else %}
+                {% for msg in room.message.all %}
+                    {% if forloop.last %}
+                        {% if msg.fk != request.user and msg.saw == False %}
+                                <div class="chatRoomBlock">
+                                    {% if room.s_usr.user_pic %}
+                                        <a href="{% url 'user_page:user_page' room.s_usr.id %}"><img src="{{ room.s_usr.user_pic.image.url }}" alt="image" width="50" height="50"></a>
+                                    {% else %}
+                                        <a href="{% url 'user_page:user_page' room.s_usr.id %}"><img src="{% static 'reg/a.jpg' %}" alt="image" width="50" height="50"></a>
+                                    {% endif %}
+                                    <a href="{% url 'user_page:user_page' room.s_usr.id %}"><span>{{ room.s_usr }}</span></a>
+                                    <a href="{% url 'chat:chat_room' room.id %}">
+                                        <div id="{{room.s_usr.id}}" class="chatRoomUnseen">{{msg.fk}} :  {{msg.text}}</div>
+                                    </a>
+                                </div>
+                        {% elif msg.fk == request.user and msg.saw == False %}
+                                <div class="chatRoomBlock">
+                                    {% if room.s_usr.user_pic %}
+                                        <a href="{% url 'user_page:user_page' room.s_usr.id %}"><img src="{{ room.s_usr.user_pic.image.url }}" alt="image" width="50" height="50"></a>
+                                    {% else %}
+                                        <a href="{% url 'user_page:user_page' room.s_usr.id %}"><img src="{% static 'reg/a.jpg' %}" alt="image" width="50" height="50"></a>
+                                    {% endif %}
+                                    <a href="{% url 'user_page:user_page' room.s_usr.id %}"><span>{{ room.s_usr }}</span></a>
+                                    <a href="{% url 'chat:chat_room' room.id %}">
+                                        <div id="{{room.s_usr.id}}" class="RUchatRoomUnseen">{{msg.fk}} :  {{msg.text}}</div>
+                                    </a>
+                                </div>
+                        {% else %}
+                                <div class="chatRoomBlock">
+                                    {% if room.s_usr.user_pic %}
+                                        <a href="{% url 'user_page:user_page' room.s_usr.id %}"><img src="{{ room.s_usr.user_pic.image.url }}" alt="image" width="50" height="50"></a>
+                                    {% else %}
+                                        <a href="{% url 'user_page:user_page' room.s_usr.id %}"><img src="{% static 'reg/a.jpg' %}" alt="image" width="50" height="50"></a>
+                                    {% endif %}
+                                    <a href="{% url 'user_page:user_page' room.s_usr.id %}"><span>{{ room.s_usr }}</span></a>
+                                    <a href="{% url 'chat:chat_room' room.id %}">
+                                        <div id="{{room.s_usr.id}}" class="chatRoomSeen">{{msg.fk}} :  {{msg.text}}</div>
+                                    </a>
+                                </div>
+                        {% endif %}
+                    {% endif %}
+                {% empty %}
+                {% endfor %}
+            {% endif %}
+        {% elif room.s_usr == request.user %}
+            {% if room.s_usr.user_pic %}
+                {% for msg in room.message.all %}
+                    {% if forloop.last %}
+                        {% if msg.fk != request.user and msg.saw == False %}
+                                <div class="chatRoomBlock">
+                                    {% if room.f_usr.user_pic %}
+                                        <a href="{% url 'user_page:user_page' room.f_usr.id %}"><img src="{{ room.f_usr.user_pic.image.url }}" alt="image" width="50" height="50"></a>
+                                    {% else %}
+                                        <a href="{% url 'user_page:user_page' room.f_usr.id %}"><img src="{% static 'reg/a.jpg' %}" alt="image" width="50" height="50"></a>
+                                    {% endif %}
+                                    <a href="{% url 'user_page:user_page' room.f_usr.id %}"><span>{{ room.f_usr }}</span></a>
+                                    <a href="{% url 'chat:chat_room' room.id %}">
+                                        <div id="{{room.f_usr.id}}" class="chatRoomUnseen">{{msg.fk}} :  {{msg.text}}</div>
+                                    </a>
+                                </div>
+                        {% elif msg.fk == request.user and msg.saw == False %}
+                                <div class="chatRoomBlock">
+                                    {% if room.f_usr.user_pic %}
+                                        <a href="{% url 'user_page:user_page' room.f_usr.id %}"><img src="{{ room.f_usr.user_pic.image.url }}" alt="image" width="50" height="50"></a>
+                                    {% else %}
+                                        <a href="{% url 'user_page:user_page' room.f_usr.id %}"><img src="{% static 'reg/a.jpg' %}" alt="image" width="50" height="50"></a>
+                                    {% endif %}
+                                    <a href="{% url 'user_page:user_page' room.f_usr.id %}"><span>{{ room.f_usr }}</span></a>
+                                    <a href="{% url 'chat:chat_room' room.id %}">
+                                        <div id="{{room.f_usr.id}}" class="RUchatRoomUnseen">{{msg.fk}} :  {{msg.text}}</div>
+                                    </a>
+                                </div>
+                        {% else %}
+                                <div class="chatRoomBlock">
+                                    {% if room.f_usr.user_pic %}
+                                        <a href="{% url 'user_page:user_page' room.f_usr.id %}"><img src="{{ room.f_usr.user_pic.image.url }}" alt="image" width="50" height="50"></a>
+                                    {% else %}
+                                        <a href="{% url 'user_page:user_page' room.f_usr.id %}"><img src="{% static 'reg/a.jpg' %}" alt="image" width="50" height="50"></a>
+                                    {% endif %}
+                                    <a href="{% url 'user_page:user_page' room.f_usr.id %}"><span>{{ room.f_usr }}</span></a>
+                                    <a href="{% url 'chat:chat_room' room.id %}">
+                                        <div id="{{room.f_usr.id}}" class="chatRoomSeen">{{msg.fk}} :  {{msg.text}}</div>
+                                    </a>
+                                </div>
+                        {% endif %}
+                    {% endif %}
+                {% empty %}
+                {% endfor %}
+            {% else %}
+                {% for msg in room.message.all %}
+                    {% if forloop.last %}
+                        {% if msg.fk != request.user and msg.saw == False %}
+                                <div class="chatRoomBlock">
+                                    {% if room.f_usr.user_pic %}
+                                        <a href="{% url 'user_page:user_page' room.f_usr.id %}"><img src="{{ room.f_usr.user_pic.image.url }}" alt="image" width="50" height="50"></a>
+                                    {% else %}
+                                        <a href="{% url 'user_page:user_page' room.f_usr.id %}"><img src="{% static 'reg/a.jpg' %}" alt="image" width="50" height="50"></a>
+                                    {% endif %}
+                                    <a href="{% url 'user_page:user_page' room.f_usr.id %}"><span>{{ room.f_usr }}</span></a>
+                                    <a href="{% url 'chat:chat_room' room.id %}">
+                                        <div id="{{room.f_usr.id}}" class="chatRoomUnseen">{{msg.fk}} :  {{msg.text}}</div>
+                                    </a>
+                                </div>
+                        {% elif msg.fk == request.user and msg.saw == False %}
+                                <div class="chatRoomBlock">
+                                    {% if room.f_usr.user_pic %}
+                                        <a href="{% url 'user_page:user_page' room.f_usr.id %}"><img src="{{ room.f_usr.user_pic.image.url }}" alt="image" width="50" height="50"></a>
+                                    {% else %}
+                                        <a href="{% url 'user_page:user_page' room.f_usr.id %}"><img src="{% static 'reg/a.jpg' %}" alt="image" width="50" height="50"></a>
+                                    {% endif %}
+                                    <a href="{% url 'user_page:user_page' room.f_usr.id %}"><span>{{ room.f_usr }}</span></a>
+                                    <a href="{% url 'chat:chat_room' room.id %}">
+                                        <div id="{{room.f_usr.id}}" class="RUchatRoomUnseen">{{msg.fk}} :  {{msg.text}}</div>
+                                    </a>
+                                </div>
+                        {% else %}
+                                <div class="chatRoomBlock">
+                                    {% if room.f_usr.user_pic %}
+                                        <a href="{% url 'user_page:user_page' room.f_usr.id %}"><img src="{{ room.f_usr.user_pic.image.url }}" alt="image" width="50" height="50"></a>
+                                    {% else %}
+                                        <a href="{% url 'user_page:user_page' room.f_usr.id %}"><img src="{% static 'reg/a.jpg' %}" alt="image" width="50" height="50"></a>
+                                    {% endif %}
+                                    <a href="{% url 'user_page:user_page' room.f_usr.id %}"><span>{{ room.f_usr }}</span></a>
+                                    <a href="{% url 'chat:chat_room' room.id %}">
+                                        <div id="{{room.f_usr.id}}" class="chatRoomSeen">{{msg.fk}} :  {{msg.text}}</div>
+                                    </a>
+                                </div>
+                        {% endif %}
+                    {% endif %}
+                {% empty %}
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+</div>
+
+<div id="roomid"></div>
+{% endblock %}
+
+{% block websocket %}
+{% if request.user.is_authenticated %}
+<script>
+
+
+    var socket = new WebSocket('ws://' + window.location.host + '/user_rooms/{{request.user.id}}/');
+
+    socket.onopen = function open() {
+        console.log('rooms.');
+    };
+
+    socket.onmessage = function message(event) {
+        var data = JSON.parse(event.data);
+        var userId = data['id'];
+        var mes = document.getElementById(userId);
+        document.getElementById(userId).classList.remove("RUchatRoomUnseen", "chatRoomSeen");
+        document.getElementById(userId).classList.add('chatRoomUnseen');
+        var mCon = String(data['m']);
+        var mU = String(data['u']);
+        mes.innerHTML = mU + ': ' + mCon ;
+    };
+
+    if (socket.readyState == WebSocket.OPEN) socket.onopen();
+
+</script>
+{% endif %}
+
+{% endblock websocket %}
+
+
+
+
+

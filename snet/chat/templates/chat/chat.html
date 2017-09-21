@@ -1,0 +1,301 @@
+{% extends 'reg/base.html' %}
+{% load staticfiles %}
+
+{% block websocket %}
+  <script>
+
+socket = new WebSocket("ws://" + window.location.host + "/chat/{{rr.id}}/");
+
+socket.onopen = function(e) {
+    var wrapper = $('#messages'),
+        prevScrollH = wrapper.prop('scrollHeight');
+    wrapper.scrollTop(prevScrollH);
+}
+
+function sendMessage(e) {
+    var txt = $('#msg_text').val();
+    socket.send(txt)
+    $('#msg_text').val('');
+
+}
+
+socket.onmessage = function(e) {
+    var data = JSON.parse(e.data);
+    var mes = document.getElementById('innerMessages');
+
+
+    if (data['q1']) {
+        $(function () {
+            $('.sawS').hide('slow');
+        });
+    }
+    if (data['q2']) {
+        $(function () {
+            $('.sawF').hide('slow');
+        });
+    }
+
+    if (data['unseen']) {
+        if (data['f_usr']) {
+            var dataU = data['u']
+            var dataC = data['unseen']
+            var dataM = data['m']
+            if (data['f_usr'] == {{request.user.id}}){
+                mes.innerHTML += '<div class="messRU"><div class="mess2RU">' + dataU + ': ' + dataM + '<p title="непрочитано" class="sawF"><i class="fa fa-eye-slash" aria-hidden="true"></i></p>' + '</div></div>';
+            }else{
+                mes.innerHTML += '<div class="mess"><div class="mess2">' + dataU + ': ' + dataM + '<p title="непрочитано" class="sawF"><i class="fa fa-eye-slash" aria-hidden="true"></i></p>' + '</div></div>';
+            }
+        }
+        if (data['s_usr']) {
+            var dataU = data['u']
+            var dataC = data['unseen']
+            var dataM = data['m']
+            if (data['s_usr'] == {{request.user.id}}){
+                mes.innerHTML += '<div class="messRU"><div class="mess2RU">' + dataU + ': ' + dataM + '<p title="непрочитано" class="sawS"><i class="fa fa-eye-slash" aria-hidden="true"></i></p>' + '</div></div>';
+            }else{
+                mes.innerHTML += '<div class="mess"><div class="mess2">' + dataU + ': ' + dataM + '<p title="непрочитано" class="sawS"><i class="fa fa-eye-slash" aria-hidden="true"></i></p>' + '</div></div>';
+            }
+        }
+    }else if (data['q1']){
+    }else if (data['q2']){
+    }else {
+        if (data['f_usr']) {
+            var dataU = data['u']
+            var dataM = data['m']
+            if (data['f_usr'] == {{request.user.id}}){
+                mes.innerHTML += '<div class="messRU"><div class="mess2RU">' + dataU + ': ' + dataM + '</div></div>';
+            }else{
+                mes.innerHTML += '<div class="mess"><div class="mess2">' + dataU + ': ' + dataM + '</div></div>';
+            }
+        }
+        if (data['s_usr']) {
+            var dataU = data['u']
+            var dataM = data['m']
+            if (data['s_usr'] == {{request.user.id}}){
+                mes.innerHTML += '<div class="messRU"><div class="mess2RU">' + dataU + ': ' + dataM + '</div></div>';
+            }else{
+                mes.innerHTML += '<div class="mess"><div class="mess2">' + dataU + ': ' + dataM + '</div></div>';
+            }
+        }
+    }
+
+            if (data['cc']) {
+                console.log('sssdasd');
+                var mes = document.getElementById('messMess');
+                var mCon = String(data['m']);
+                var mU = String(data['u']);
+
+                mes.innerHTML += '<div class="vvv" onmouseover="HoldTimer()" onmouseout="$(this).hide(slow);" style=" max-height:inherit; bottom:inherit; display: block; padding: 0.8em; border-style: solid; border-color: #aacbe2; background-color: rgb(0,0,0); background-color: rgba(0,0,0,0.4); " id="' + data['cc'] + '">' + mU + ': ' + mCon + '</div><br>';
+                sTime = setTimeout(function(){
+                    $('#' + data['cc']).hide();
+                }, 10000);
+                sTime;
+
+
+                var msgsnd = document.getElementById("msg_snd");
+                $(function () {
+                    msgsnd.play();
+                });
+            }
+
+            if (data['c']) {
+                var m = document.getElementById('mcount');
+
+                var mCn = data['c'];
+                m.innerHTML = mCn
+            }
+
+    var wrapper = $('#messages'),
+        prevScrollH = wrapper.prop('scrollHeight');
+
+    wrapper.scrollTop(prevScrollH);
+}
+
+    if (socket.readyState == WebSocket.OPEN) socket.onopen();
+
+  </script>
+{% endblock websocket %}
+
+{% block content %}
+
+<div id="messages" class="messages" >
+
+                {% if first_msgs != False %}
+                        <input class="new_click" type="button" value="Загрузить старые сообщения" >
+                {% endif %}
+
+    <div id="innerMessages">
+        {% if first_msgs != False %}
+            {% for m in first_msgs reversed %} <div id="another_fkn_div"></div>
+                {% if m.fk == rr.f_usr %}
+                    {% if m.fk == request.user %}
+                        <div class="messRU"><div class="mess2RU">{{m.fk}}: {{ m.text }}
+                            {% if m.saw == False %}
+                                <p title="непрочитано" class="sawF"><i class="fa fa-eye-slash" aria-hidden="true"></i></p>
+                            {% endif %}</div>
+                        </div>
+                    {% else %}
+                        <div class="mess"><div class="mess2">{{m.fk}}: {{ m.text }}
+                            {% if m.saw == False %}
+                                <p title="непрочитано" class="sawF"><i class="fa fa-eye-slash" aria-hidden="true"></i></p>
+                            {% endif %}</div>
+                        </div>
+                    {% endif %}
+                {% elif m.fk == rr.s_usr %}
+                    {% if m.fk == request.user %}
+                        <div class="messRU"><div class="mess2RU">{{m.fk}}: {{ m.text }}
+                            {% if m.saw == False %}
+                                <p title="непрочитано" class="sawS"><i class="fa fa-eye-slash" aria-hidden="true"></i></p>
+                            {% endif %}</div>
+                        </div>
+                    {% else %}
+                        <div class="mess"><div class="mess2">{{m.fk}}: {{ m.text }}
+                            {% if m.saw == False %}
+                                <p title="непрочитано" class="sawS"><i class="fa fa-eye-slash" aria-hidden="true"></i></p>
+                            {% endif %}</div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+                {% if forloop.last %}
+                    {% if forloop.counter < 100 %}
+                        <script>$('.new_click').hide();</script>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        {% else %} Нет сообщений
+        {% endif %}
+    </div>
+
+</div>
+
+          <script>
+          var plsCount = 0;
+                $(document).on('click', '.new_click', function(e) {
+                    try {
+                        var firstMsg = $('.mess:first');
+                    }catch (e) {
+                        var firstMsg = $('.messRU:first');
+                    }
+                    try {
+                        var curOffset = firstMsg.offset().top - $('#messages').scrollTop();
+                    }catch (e){$('.new_click').hide();}
+
+                  plsCount += 100;
+                  $('#messages').scroll(0);
+                  e.preventDefault();
+                  $.ajax({
+                    type: 'GET',
+                    url: '/chat/messages_list/{{rr.id}}/'+plsCount+'/',
+                    dataType: 'json',
+                    beforeSend: function() {$('#innerMessages').prepend('<br>-- старые сообщения --<br><br>');},
+                    success: function(data){
+                        var jData = JSON.parse(data); var t = 'true'; var f = 'false';
+                                                                //var i = jData.length;while(i--)
+                        for (var i = 0; i < jData.length; i++)
+                            if ('{{rr.f_usr.id}}' == jData[i].fields.fk) {
+                                if ('{{rr.f_usr.id}}' == '{{request.user.id}}') {
+                                    if (String(jData[i].fields.saw) == t){
+                                        $('#innerMessages').prepend('<div class="messRU"><div class="mess2RU">' + '{{rr.f_usr}}' +': '+ jData[i].fields.text + '</div></div>');
+                                    }else {
+                                        $('#innerMessages').prepend('<div class="messRU"><div class="mess2RU">' + '{{rr.f_usr}}' +': '+ jData[i].fields.text + '<p class="sawF">(непрочитане)</p></div></div>');
+                                    }
+                                }else {
+                                    if (String(jData[i].fields.saw) == t){
+                                        $('#innerMessages').prepend('<div class="mess"><div class="mess2">' + '{{rr.f_usr}}' +': '+ jData[i].fields.text + '</div></div>');
+                                    }else {
+                                        $('#innerMessages').prepend('<div class="mess"><div class="mess2">' + '{{rr.f_usr}}' +': '+ jData[i].fields.text + '<p class="sawF">(непрочитане)</p></div></div>');
+                                    }
+                                }
+                            }else if ('{{rr.s_usr.id}}' == jData[i].fields.fk) {
+                                if ('{{rr.s_usr.id}}' == '{{request.user.id}}') {
+                                    if (String(jData[i].fields.saw) == t){
+                                        $('#innerMessages').prepend('<div class="messRU"><div class="mess2RU">' + '{{rr.s_usr}}' +': '+ jData[i].fields.text + '</div></div>');
+                                    }else {
+                                        $('#innerMessages').prepend('<div class="messRU"><div class="mess2RU">' + '{{rr.s_usr}}' +': '+ jData[i].fields.text + '<p class="sawS">(непрочитане)</p></div></div>');
+                                    }
+                                }else {
+                                    if (String(jData[i].fields.saw) == t){
+                                        $('#innerMessages').prepend('<div class="mess"><div class="mess2">' + '{{rr.s_usr}}' +': '+ jData[i].fields.text + '</div></div>');
+                                    }else {
+                                        $('#innerMessages').prepend('<div class="mess"><div class="mess2">' + '{{rr.s_usr}}' +': '+ jData[i].fields.text + '<p class="sawS">(непрочитане)</p></div></div>');
+                                    }
+                                }
+                            }
+                            var checkPlsCount = plsCount - 250;
+                            if (i < checkPlsCount) {$('.new_click').hide();}
+                    },
+                    complete:  function(){
+                        $('#messages').scrollTop(firstMsg.offset().top-curOffset);
+                    }
+                  });
+                });
+          </script>
+
+<div id="chat_message_form_div">
+    <ul id="chat_message_form_ul">
+        {% if rr.f_usr != request.user %}
+            <li class="chat_message_form_user_panel_1">
+                <p class="chat_message_form_div_p_1">
+                    <a href="{% url 'user_page:user_page' rr.f_usr.id %}">{{ rr.f_usr.username }}</a></p>
+                {% if rr.f_usr.user_pic %}
+                    <a href="{% url 'user_page:user_page' rr.f_usr.id %}">
+                        <img class="chat_message_form_img" src="{{ rr.f_usr.user_pic.image.url }}" alt="image"></a>
+                {% else %}
+                    <a href="{% url 'user_page:user_page' rr.f_usr.id %}">
+                        <img class="chat_message_form_img" src="{% static 'reg/a.png' %}" alt="image"></a>
+                {% endif %}
+            </li>
+        {% elif rr.s_usr != request.user %}
+            <li class="chat_message_form_user_panel_1">
+                <p class="chat_message_form_div_p_1">
+                    <a href="{% url 'user_page:user_page' rr.s_usr.id %}">{{ rr.s_usr.username }}</a></p>
+                {% if rr.s_usr.user_pic %}
+                    <a href="{% url 'user_page:user_page' rr.s_usr.id %}">
+                        <img class="chat_message_form_img" src="{{ rr.s_usr.user_pic.image.url }}" alt="image"></a>
+                {% else %}
+                    <a href="{% url 'user_page:user_page' rr.s_usr.id %}">
+                        <img class="chat_message_form_img" src="{% static 'reg/a.png' %}" alt="image"></a>
+                {% endif %}
+            </li>
+        {% endif %}
+
+                        <li id="fform" >
+                            <textarea id="msg_text" maxlength="1000"></textarea>
+                            <button type="submit" onclick="sendMessage();"><i class="fa fa-share" aria-hidden="true"></i></button>
+                        </li>
+
+        {% if rr.f_usr == request.user %}
+            <li class="chat_message_form_user_panel_2">
+                <p class="chat_message_form_div_p_2">
+                    <a href="{% url 'user_page:user_page' rr.f_usr.id %}">{{ rr.f_usr.username }}</a></p>
+                {% if rr.f_usr.user_pic %}
+                    <a href="{% url 'user_page:user_page' rr.f_usr.id %}">
+                        <img class="chat_message_form_img2" src="{{ rr.f_usr.user_pic.image.url }}" alt="image"></a>
+                {% else %}
+                    <a href="{% url 'user_page:user_page' rr.f_usr.id %}">
+                        <img class="chat_message_form_img2" src="{% static 'reg/a.png' %}" alt="image"></a>
+                {% endif %}
+            </li>
+        {% elif rr.s_usr == request.user %}
+            <li class="chat_message_form_user_panel_2">
+                <p class="chat_message_form_div_p_2">
+                    <a href="{% url 'user_page:user_page' rr.s_usr.id %}">{{ rr.s_usr.username }}</a></p>
+                {% if rr.s_usr.user_pic %}
+                    <a href="{% url 'user_page:user_page' rr.s_usr.id %}">
+                        <img class="chat_message_form_img2" src="{{ rr.s_usr.user_pic.image.url }}" alt="image"></a>
+                {% else %}
+                    <a href="{% url 'user_page:user_page' rr.s_usr.id %}">
+                        <img class="chat_message_form_img2" src="{% static 'reg/a.png' %}" alt="image"></a>
+                {% endif %}
+            </li>
+        {% endif %}
+    </ul>
+</div>
+
+<script type="text/javascript">
+    var wrapper = $('#messages'),
+        prevScrollH = wrapper.prop('scrollHeight');
+
+    wrapper.scrollTop(prevScrollH);
+</script>
+{% endblock %}
